@@ -24,20 +24,36 @@ class foreman_proxy::proxydhcp {
     $nameservers = split($foreman_proxy::dhcp_nameservers,',')
   }
 
-  class { '::dhcp':
-    dnsdomain   => $foreman_proxy::dhcp_option_domain,
-    nameservers => $nameservers,
-    interfaces  => [$foreman_proxy::dhcp_interface],
-    pxeserver   => $ip,
-    pxefilename => 'pxelinux.0',
-    omapi_name  => $foreman_proxy::dhcp_key_name,
-    omapi_key   => $foreman_proxy::dhcp_key_secret,
+  if $foreman_proxy::dhcp_multiple_interfaces != undef {
+    class { '::dhcp':
+      dnsdomain   => $foreman_proxy::dhcp_option_domain,
+      nameservers => $nameservers,
+      interfaces  => $foreman_proxy::dhcp_multiple_interfaces,
+      pxeserver   => $ip,
+      pxefilename => 'pxelinux.0',
+      omapi_name  => $foreman_proxy::dhcp_key_name,
+      omapi_key   => $foreman_proxy::dhcp_key_secret,
+    }
+  } else {
+    class { '::dhcp':
+      dnsdomain   => $foreman_proxy::dhcp_option_domain,
+      nameservers => $nameservers,
+      interfaces  => [$foreman_proxy::dhcp_interface],
+      pxeserver   => $ip,
+      pxefilename => 'pxelinux.0',
+      omapi_name  => $foreman_proxy::dhcp_key_name,
+      omapi_key   => $foreman_proxy::dhcp_key_secret,
+    }
   }
 
-  ::dhcp::pool{ $::domain:
-    network => $net,
-    mask    => $mask,
-    range   => $foreman_proxy::dhcp_range,
-    gateway => $foreman_proxy::dhcp_gateway,
+  if $foreman_proxy::dhcp_multiple_pools != undef {
+    create_resources('dhcp::pool', $foreman_proxy::dhcp_multiple_pools)
+  } else {
+    ::dhcp::pool{ $::domain:
+     network => $net,
+     mask    => $mask,
+     range   => $foreman_proxy::dhcp_range,
+     gateway => $foreman_proxy::dhcp_gateway,
+    }
   }
 }

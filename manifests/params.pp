@@ -155,22 +155,24 @@ class foreman_proxy::params {
   $tftp_syslinux_files = undef
 
   # DHCP settings - requires optional DHCP puppet module
-  $dhcp                   = false
-  $dhcp_listen_on         = 'https'
-  $dhcp_managed           = true
-  $dhcp_interface         = 'eth0'
-  $dhcp_gateway           = '192.168.100.1'
-  $dhcp_range             = false
-  $dhcp_option_domain     = [$::domain]
+  $dhcp                     = false
+  $dhcp_listen_on           = 'https'
+  $dhcp_managed             = true
+  $dhcp_interface           = 'eth0'
+  $dhcp_multiple_interfaces = undef
+  $dhcp_gateway             = '192.168.100.1'
+  $dhcp_range               = false
+  $dhcp_option_domain       = [$::domain]
   # This will use the IP of the interface in $dhcp_interface, override
   # if you need to. You can make this a comma-separated string too - it
   # will be split into an array
-  $dhcp_nameservers = 'default'
+  $dhcp_nameservers    = 'default'
   # Omapi settings
-  $dhcp_key_name   = undef
-  $dhcp_key_secret = undef
-  $dhcp_omapi_port = 7911
-  $dhcp_vendor     = 'isc'
+  $dhcp_key_name       = undef
+  $dhcp_key_secret     = undef
+  $dhcp_omapi_port     = 7911
+  $dhcp_vendor         = 'isc'
+  $dhcp_multiple_pools = undef
 
   # DNS settings - requires optional DNS puppet module
   $dns                = false

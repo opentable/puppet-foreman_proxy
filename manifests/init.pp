@@ -166,6 +166,9 @@
 #
 # $dhcp_interface::             DHCP listen interface
 #
+# $dhcp_multiple_interfaces::   If you need to listen on multiple interfaces define them as an array of
+#                               the interfaces
+#
 # $dhcp_gateway::               DHCP pool gateway
 #
 # $dhcp_range::                 Space-separated DHCP pool range
@@ -184,6 +187,9 @@
 #
 # $dhcp_omapi_port::            DHCP server OMAPI port
 #                               type:integer
+#
+# $dhcp_multiple_pools::        If you need multiple dhcp pools in different subnets define them as a hash
+#                               to use them instead of the above configuration. See the puppet-dhcp module.
 #
 # $dns::                        Enable DNS feature
 #                               type:boolean
@@ -323,6 +329,7 @@ class foreman_proxy (
   $dhcp_managed               = $foreman_proxy::params::dhcp_managed,
   $dhcp_option_domain         = $foreman_proxy::params::dhcp_option_domain,
   $dhcp_interface             = $foreman_proxy::params::dhcp_interface,
+  $dhcp_multiple_interfaces   = $foreman_proxy::params::dhcp_multiple_interfaces,
   $dhcp_gateway               = $foreman_proxy::params::dhcp_gateway,
   $dhcp_range                 = $foreman_proxy::params::dhcp_range,
   $dhcp_nameservers           = $foreman_proxy::params::dhcp_nameservers,
@@ -332,6 +339,7 @@ class foreman_proxy (
   $dhcp_key_name              = $foreman_proxy::params::dhcp_key_name,
   $dhcp_key_secret            = $foreman_proxy::params::dhcp_key_secret,
   $dhcp_omapi_port            = $foreman_proxy::params::dhcp_omapi_port,
+  $dhcp_multiple_pools        = $foreman_proxy::params::dhcp_multiple_pools,
   $dns                        = $foreman_proxy::params::dns,
   $dns_listen_on              = $foreman_proxy::params::dns_listen_on,
   $dns_managed                = $foreman_proxy::params::dns_managed,
