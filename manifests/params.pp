@@ -173,6 +173,7 @@ class foreman_proxy::params {
   $dhcp_omapi_port     = 7911
   $dhcp_vendor         = 'isc'
   $dhcp_multiple_pools = undef
+  $dhcp_static_reservations = undef
 
   # DNS settings - requires optional DNS puppet module
   $dns                = false

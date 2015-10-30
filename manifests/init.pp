@@ -188,8 +188,10 @@
 # $dhcp_omapi_port::            DHCP server OMAPI port
 #                               type:integer
 #
-# $dhcp_multiple_pools::        If you need multiple dhcp pools in different subnets define them as a hash
+# $dhcp_multiple_pools::        If you need multiple DHCP pools in different subnets define them as a hash
 #                               to use them instead of the above configuration. See the puppet-dhcp module.
+#
+# $dhcp_static_reservations::	Static DHCP entries to put in the dhcpd.hosts file
 #
 # $dns::                        Enable DNS feature
 #                               type:boolean
@@ -340,6 +342,7 @@ class foreman_proxy (
   $dhcp_key_secret            = $foreman_proxy::params::dhcp_key_secret,
   $dhcp_omapi_port            = $foreman_proxy::params::dhcp_omapi_port,
   $dhcp_multiple_pools        = $foreman_proxy::params::dhcp_multiple_pools,
+  $dhcp_static_reservations   = $foreman_proxy::params::dhcp_static_reservations,
   $dns                        = $foreman_proxy::params::dns,
   $dns_listen_on              = $foreman_proxy::params::dns_listen_on,
   $dns_managed                = $foreman_proxy::params::dns_managed,

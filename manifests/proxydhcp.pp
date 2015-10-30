@@ -56,4 +56,8 @@ class foreman_proxy::proxydhcp {
      gateway => $foreman_proxy::dhcp_gateway,
     }
   }
+
+  if $foreman_proxy::dhcp_static_reservations != undef {
+    create_resources('dhcp::host', $foreman_proxy::dhcp_static_reservations)
+  }
 }
