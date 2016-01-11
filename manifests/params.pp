@@ -6,6 +6,9 @@ class foreman_proxy::params {
 
   case $::osfamily {
     'RedHat': {
+      # if set to true, no repo will be added by this module, letting you to
+      # set it to some custom location.
+      $custom_repo         = false
       $plugin_prefix       = 'rubygem-smart_proxy_'
       $foreman_api_package = 'rubygem-apipie-bindings'
 
@@ -28,6 +31,9 @@ class foreman_proxy::params {
                                   '/usr/share/syslinux/pxelinux.0']
     }
     'Debian': {
+      # if set to true, no repo will be added by this module, letting you to
+      # set it to some custom location.
+      $custom_repo         = false
       $plugin_prefix       = 'ruby-smart-proxy-'
       $foreman_api_package = 'ruby-apipie-bindings'
 
@@ -58,6 +64,33 @@ class foreman_proxy::params {
                                     '/usr/lib/syslinux/pxelinux.0']
       }
     }
+    /^(FreeBSD|DragonFly)$/: {
+      # if set to true, no repo will be added by this module, letting you to
+      # set it to some custom location.
+      $custom_repo         = true # as foreman packages are in standard FreeBSD ports
+      $plugin_prefix       = 'rubygem-smart_proxy_'
+      $foreman_api_package = 'rubygem-apipie-bindings'
+
+      $dir   = '/usr/local/share/foreman-proxy'
+      $etc   = '/usr/local/etc'
+      $shell = '/usr/bin/false'
+      $user  = 'foreman_proxy'
+
+      $puppetssh_command = '/usr/local/bin/puppet agent --onetime --no-usecacheonfailure'
+
+      $dhcp_config = '/usr/local/etc/dhcpd.conf'
+      $dhcp_leases = '/var/db/dhcpd/dhcpd.leases'
+
+      $keyfile  = '/usr/local/etc/namedb/rndc.key'
+      $nsupdate = 'bind910'
+
+      $tftp_syslinux_filenames = ['/usr/local/share/syslinux/bios/core/pxelinux.0',
+                                  '/usr/local/share/syslinux/bios/memdisk/memdisk',
+                                  '/usr/local/share/syslinux/bios/com32/chain/chain.c32',
+                                  '/usr/local/share/syslinux/bios/com32/elflink/ldlinux/ldlinux.c32',
+                                  '/usr/local/share/syslinux/bios/com32/libutil/libutil.c32',
+                                  '/usr/local/share/syslinux/bios/com32/menu/menu.c32']
+    }
     default: {
       fail("${::hostname}: This module does not support osfamily ${::osfamily}")
     }
@@ -66,9 +99,6 @@ class foreman_proxy::params {
   # Packaging
   $repo           = 'stable'
   $gpgcheck       = true
-  # if set to true, no repo will be added by this module, letting you to
-  # set it to some custom location.
-  $custom_repo    = false
   $version        = 'present'
   $plugin_version = 'installed'
 
@@ -166,7 +196,8 @@ class foreman_proxy::params {
   # This will use the IP of the interface in $dhcp_interface, override
   # if you need to. You can make this a comma-separated string too - it
   # will be split into an array
-  $dhcp_nameservers    = 'default'
+  $dhcp_nameservers = 'default'
+  $dhcp_server      = '127.0.0.1'
   # Omapi settings
   $dhcp_key_name       = undef
   $dhcp_key_secret     = undef
@@ -176,19 +207,20 @@ class foreman_proxy::params {
   $dhcp_static_reservations = undef
 
   # DNS settings - requires optional DNS puppet module
-  $dns                = false
-  $dns_listen_on      = 'https'
-  $dns_managed        = true
-  $dns_provider       = 'nsupdate'
-  $dns_interface      = 'eth0'
-  $dns_zone           = $::domain
-  $dns_realm          = upcase($dns_zone)
-  $dns_reverse        = '100.168.192.in-addr.arpa'
+  $dns                    = false
+  $dns_split_config_files = true # smart-proxy 1.10+
+  $dns_listen_on          = 'https'
+  $dns_managed            = true
+  $dns_provider           = 'nsupdate'
+  $dns_interface          = 'eth0'
+  $dns_zone               = $::domain
+  $dns_realm              = upcase($dns_zone)
+  $dns_reverse            = '100.168.192.in-addr.arpa'
   # localhost can resolve to ipv6 which ruby doesn't handle well
-  $dns_server         = '127.0.0.1'
-  $dns_ttl            = '86400'
-  $dns_tsig_keytab    = "${etc}/foreman-proxy/dns.keytab"
-  $dns_tsig_principal = "foremanproxy/${::fqdn}@${dns_realm}"
+  $dns_server             = '127.0.0.1'
+  $dns_ttl                = '86400'
+  $dns_tsig_keytab        = "${etc}/foreman-proxy/dns.keytab"
+  $dns_tsig_principal     = "foremanproxy/${::fqdn}@${dns_realm}"
 
   $dns_forwarders = []
 
@@ -220,6 +252,6 @@ class foreman_proxy::params {
   $oauth_effective_user = 'admin'
   # OAuth credentials
   # shares cached_data with the foreman module so they're the same
-  $oauth_consumer_key    = cache_data('oauth_consumer_key', random_password(32))
-  $oauth_consumer_secret = cache_data('oauth_consumer_secret', random_password(32))
+  $oauth_consumer_key    = cache_data('foreman_cache_data', 'oauth_consumer_key', random_password(32))
+  $oauth_consumer_secret = cache_data('foreman_cache_data', 'oauth_consumer_secret', random_password(32))
 }

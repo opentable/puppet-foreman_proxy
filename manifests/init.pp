@@ -175,6 +175,8 @@
 #
 # $dhcp_nameservers::           DHCP nameservers
 #
+# $dhcp_server::                Address of DHCP server to manage 
+#
 # $dhcp_vendor::                DHCP vendor
 #
 # $dhcp_config::                DHCP config file path
@@ -194,6 +196,9 @@
 # $dhcp_static_reservations::	Static DHCP entries to put in the dhcpd.hosts file
 #
 # $dns::                        Enable DNS feature
+#                               type:boolean
+#
+# $dns_split_config_files::     Split DNS configuration files. This is needed since version 1.10.
 #                               type:boolean
 #
 # $dns_listen_on::              DNS proxy to listen on https, http, or both
@@ -335,6 +340,7 @@ class foreman_proxy (
   $dhcp_gateway               = $foreman_proxy::params::dhcp_gateway,
   $dhcp_range                 = $foreman_proxy::params::dhcp_range,
   $dhcp_nameservers           = $foreman_proxy::params::dhcp_nameservers,
+  $dhcp_server                = $foreman_proxy::params::dhcp_server,
   $dhcp_vendor                = $foreman_proxy::params::dhcp_vendor,
   $dhcp_config                = $foreman_proxy::params::dhcp_config,
   $dhcp_leases                = $foreman_proxy::params::dhcp_leases,
@@ -344,6 +350,7 @@ class foreman_proxy (
   $dhcp_multiple_pools        = $foreman_proxy::params::dhcp_multiple_pools,
   $dhcp_static_reservations   = $foreman_proxy::params::dhcp_static_reservations,
   $dns                        = $foreman_proxy::params::dns,
+  $dns_split_config_files     = $foreman_proxy::params::dns_split_config_files,
   $dns_listen_on              = $foreman_proxy::params::dns_listen_on,
   $dns_managed                = $foreman_proxy::params::dns_managed,
   $dns_provider               = $foreman_proxy::params::dns_provider,
@@ -416,8 +423,10 @@ class foreman_proxy (
   validate_bool($dhcp_managed)
   validate_array($dhcp_option_domain)
   validate_integer($dhcp_omapi_port)
+  validate_string($dhcp_server)
 
   # Validate dns params
+  validate_bool($dns, $dns_split_config_files)
   validate_string($dns_interface, $dns_provider, $dns_reverse, $dns_server, $keyfile)
   validate_array($dns_forwarders)
 
